@@ -276,7 +276,8 @@ async def show_main_menu(update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("Привет", callback_data='hello'), InlineKeyboardButton("Помощь", callback_data='help')],
         [InlineKeyboardButton("Информация", callback_data='info'), InlineKeyboardButton("Файлы", callback_data='files_list')],
-        [InlineKeyboardButton("Настройки", callback_data='settings_menu'), InlineKeyboardButton("📊 Логи операций", callback_data='view_logs')]
+        [InlineKeyboardButton("Настройки", callback_data='settings_menu'), InlineKeyboardButton("📊 Логи операций", callback_data='view_logs')],
+        [InlineKeyboardButton("📡 Удалённые хранилища", callback_data='remote_menu')]
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)

@@ -1,9 +1,13 @@
 import logging
 import os
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ConversationHandler
 
 import handlers
 from storage import create_folder_structure
+from handlers.remote_handlers import (
+    ADD_CLIENT_NAME, ADD_CLIENT_URL,
+    remote_add_client_name, remote_add_client_url
+)
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -31,6 +35,17 @@ def main():
 
     application.add_handler(CommandHandler("start", handlers.start))
     application.add_handler(CallbackQueryHandler(handlers.button_callback))
+    
+    # ConversationHandler для добавления клиента
+    conv_handler = ConversationHandler(
+        entry_points=[CallbackQueryHandler(handlers.remote_handlers.remote_add_client_start, pattern='^remote_add$')],
+        states={
+            ADD_CLIENT_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, remote_add_client_name)],
+            ADD_CLIENT_URL: [MessageHandler(filters.TEXT & ~filters.COMMAND, remote_add_client_url)]
+        },
+        fallbacks=[CallbackQueryHandler(handlers.button_callback, pattern='^remote_menu$')]
+    )
+    application.add_handler(conv_handler)
 
     application.add_handler(MessageHandler(filters.PHOTO, handlers.photo_handler))
     application.add_handler(MessageHandler(filters.Document.ALL, handlers.document_handler))

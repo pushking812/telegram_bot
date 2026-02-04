@@ -11,6 +11,7 @@ from logs import load_logs, save_logs, add_log_entry
 from .ui import show_files_list, show_logs, show_settings, show_files_updated, show_main_menu
 from .uploads import send_file_to_user
 from .common import safe_edit_message
+from . import remote_handlers
 
 logger = logging.getLogger(__name__)
 
@@ -314,6 +315,26 @@ async def button_callback(update, context):
         elif callback_data == 'main_menu':
             message_text, reply_markup = await show_main_menu(update, context)
             await safe_edit_message(query, message_text, reply_markup)
+        
+        # Remote storage menu
+        elif callback_data == 'remote_menu':
+            await remote_storage_menu(update, context)
+        elif callback_data == 'remote_refresh':
+            await remote_storage_menu(update, context)
+        elif callback_data == 'remote_status':
+            await remote_status(update, context)
+        elif callback_data == 'remote_add':
+            return await remote_add_client_start(update, context)
+        elif callback_data == 'remote_browse':
+            await remote_browse_files(update, context)
+        elif callback_data.startswith('remote_browse_client_'):
+            await remote_browse_client_files(update, context)
+        elif callback_data.startswith('remote_delete_'):
+            if 'confirm' in callback_data:
+                await remote_delete_confirm(update, context)
+            elif 'yes' in callback_data:
+                await remote_delete_yes(update, context)
+        
         elif callback_data == 'hello':
             display_name = get_user_display_name(user_id, update)
             await query.message.reply_text(f"И тебе привет, {display_name}! 👋")
